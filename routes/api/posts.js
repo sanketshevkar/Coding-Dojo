@@ -49,5 +49,68 @@ router.get('/', auth, async(req, res)=>{
     }
 });
 
+//@route    DELETE api/posts/:id
+//@desc     delete post
+//@access   Private
+router.delete('/:id', auth, async(req, res)=>{
+    try {
+        const post=await Post.findById(req.params.id);
+
+        if(!post){
+            return res.status(404).json({msg: 'post not found'});
+        }
+
+        //check on user
+
+        if(post.user.toString()!==req.user.id){
+            return res.status(401).json({msg:'User not autorized'});
+        }
+        await post.remove();
+
+        res.json({msg: 'post removed'});
+    } catch (err) {
+        console.error(err.message);
+        if(!err.kind=='ObjectId'){
+            return res,status(404).json({msg: 'post not found'});
+        }
+        res.status(500).send('Server Error');
+    }
+});
+
+
+//@route    PUT api/posts
+//@desc     update a post
+//@access   Private
+router.put('/:id', [auth,[
+    check('text', 'Text is required').not().isEmpty()
+]], async(req, res)=>{;
+    try{
+    let post=await Post.findById(req.params.id);
+
+        if(!post){
+            return res.status(404).json({msg: 'post not found'});
+        }
+
+        //check on user
+
+        if(post.user.toString()!==req.user.id){
+            return res.status(401).json({msg:'User not autorized'});
+        }
+
+        const user=await User.findById(req.user.id).select('-password');
+
+        post.text=req.body.text,
+
+     await post.save()
+
+    res.json(post);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+
+});
+
+
 module.exports = router;
 
