@@ -8,6 +8,8 @@ const validateRegisterInput = require("../../validation/register");
 const validateLoginInput = require("../../validation/login");
 // Load User model
 const User = require("../../models/User");
+//send grid 
+const sgMail = require('@sendgrid/mail');
 
 
 // @route POST api/users/register
@@ -15,85 +17,96 @@ const User = require("../../models/User");
 // @access Public
 router.post("/register", (req, res) => {
     // Form validation
-  const { errors, isValid } = validateRegisterInput(req.body);
-  // Check validation
+    const { errors, isValid } = validateRegisterInput(req.body);
+    // Check validation
     if (!isValid) {
-      return res.status(400).json(errors);
+        return res.status(400).json(errors);
     }
-  User.findOne({ email: req.body.email }).then(user => {
-      if (user) {
-        return res.status(400).json({ email: "Email already exists" });
-      } else {
-        const newUser = new User({
-          name: req.body.name,
-          email: req.body.email,
-          password: req.body.password
-        });
-  // Hash password before saving in database
-        bcrypt.genSalt(10, (err, salt) => {
-          bcrypt.hash(newUser.password, salt, (err, hash) => {
-            if (err) throw err;
-            newUser.password = hash;
-            newUser
-              .save()
-              .then(user => res.json(user))
-              .catch(err => console.log(err));
-          });
-        });
-      }
+    User.findOne({ email: req.body.email }).then(user => {
+        if (user) {
+            return res.status(400).json({ email: "Email already exists" });
+        } else {
+            const newUser = new User({
+                name: req.body.name,
+                email: req.body.email,
+                password: req.body.password
+            });
+            // Hash password before saving in database
+            bcrypt.genSalt(10, (err, salt) => {
+                bcrypt.hash(newUser.password, salt, (err, hash) => {
+                    if (err) throw err;
+                    newUser.password = hash;
+                    newUser
+                        .save()
+                        .then(user => res.json(user))
+                        .catch(err => console.log(err));
+                });
+            });
+
+            sgMail.setApiKey(keys.sendGridKey);
+            const msg = {
+                to: newUser.email,
+                from: 'shevkar.sanket@gmail.com',
+                subject: 'Sending with Twilio SendGrid is Fun',
+                text: 'and easy to do anywhere, even with Node.js',
+                html: '<strong>and easy to do anywhere, even with Node.js</strong>',
+            };
+
+            sgMail.send(msg);
+        }
     });
-  });
+});
 
 
-  // @route POST api/users/login
+// @route POST api/users/login
 // @desc Login user and return JWT token
 // @access Public
 router.post("/login", (req, res) => {
     // Form validation
-  const { errors, isValid } = validateLoginInput(req.body);
-  // Check validation
+    const { errors, isValid } = validateLoginInput(req.body);
+    // Check validation
     if (!isValid) {
-      return res.status(400).json(errors);
+        return res.status(400).json(errors);
     }
-  const email = req.body.email;
+    const email = req.body.email;
     const password = req.body.password;
-  // Find user by email
+    // Find user by email
     User.findOne({ email }).then(user => {
-      // Check if user exists
-      if (!user) {
-        return res.status(404).json({ emailnotfound: "Email not found" });
-      }
-  // Check password
-      bcrypt.compare(password, user.password).then(isMatch => {
-        if (isMatch) {
-          // User matched
-          // Create JWT Payload
-          const payload = {
-            id: user.id,
-            name: user.name
-          };
-  // Sign token
-          jwt.sign(
-            payload,
-            keys.secretOrKey,
-            {
-              expiresIn: 31556926 // 1 year in seconds
-            },
-            (err, token) => {
-              res.json({
-                success: true,
-                token: "Bearer " + token
-              });
-            }
-          );
-        } else {
-          return res
-            .status(400)
-            .json({ passwordincorrect: "Password incorrect" });
+        // Check if user exists
+        if (!user) {
+            return res.status(404).json({ emailnotfound: "Email not found" });
         }
-      });
+        // Check password
+        bcrypt.compare(password, user.password).then(isMatch => {
+            if (isMatch) {
+                // User matched
+                // Create JWT Payload
+                const payload = {
+                    id: user.id,
+                    name: user.name
+                };
+                // Sign token
+                jwt.sign(
+                    payload,
+                    keys.secretOrKey,
+                    {
+                        expiresIn: 31556926 // 1 year in seconds
+                    },
+                    (err, token) => {
+                        res.json({
+                            success: true,
+                            token: "Bearer " + token
+                        });
+                    }
+                );
+            } else {
+                return res
+                    .status(400)
+                    .json({ passwordincorrect: "Password incorrect" });
+            }
+        });
     });
-  });
+});
 
 
-  module.exports = router;
+module.exports = router;
