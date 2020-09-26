@@ -47,7 +47,7 @@ class Navbar extends Component {
                 <i className="material-icons"></i>
                 POST-IT
               </Link>
-              <ul id="nav-mobile" class="right hide-on-med-and-down">
+              <ul id="nav-mobile" className="right hide-on-med-and-down">
           <li>
             <button
           style={{
@@ -59,7 +59,7 @@ class Navbar extends Component {
           onClick={this.onLogoutClick}
           className="btn btn-large waves-effect waves-light hoverable blue accent-3"
         >
-          Logout{console.log(this.props.auth.isAuthenticated)}
+          Logout
         </button>
         </li>
         </ul>

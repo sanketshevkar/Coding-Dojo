@@ -10,6 +10,8 @@ import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
 import Chip from '@material-ui/core/Chip';
 import Edit from './Edit'
+import { connect } from "react-redux";
+
 
 const styles = (theme) => ({
   paper: {
@@ -37,33 +39,36 @@ const styles = (theme) => ({
   }
 });
 
-function Note(props) {
-  const { classes } = props;
 
+function Note(props) {
+  const { classes,del } = props;
+
+  
+  
   return (
     <Paper className={classes.paper}>
       <AppBar className={classes.searchBar} position="static" color="default" elevation={0}>
         <Toolbar>
           <Grid container spacing={2} alignItems="center">
             <Grid item>
-                <Edit />
-              <Button variant="contained" color="secondary" className={classes.addUser}>
+              <Edit text={props.post.text}/>
+              <Button variant="contained" color="secondary" className={classes.addUser} onClick={()=>del(props.post._id,props.auth.user)}>
                 Delete
               </Button>
               <Chip
-              label="date"
-              className={classes.chip}
-              color="default"
-            />
+                label={props.post.date}
+                className={classes.chip}
+                color="default"
+              />
             </Grid>
           </Grid>
         </Toolbar>
       </AppBar>
       <div className={classes.contentWrapper} >
         <Typography color="textSecondary" align="center" >
-          
-Why do we use it?
-It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).
+
+
+          {props.post.text}
 
 
         </Typography>
@@ -74,6 +79,14 @@ It is a long established fact that a reader will be distracted by the readable c
 
 Note.propTypes = {
   classes: PropTypes.object.isRequired,
+  post: PropTypes.object.isRequired,
+  auth: PropTypes.object.isRequired,
+  del: PropTypes.func.isRequired
 };
 
-export default withStyles(styles)(Note);
+const mapStateToProps = state => ({
+  auth: state.auth
+});
+export default connect(
+  mapStateToProps
+)(withStyles(styles)(Note));

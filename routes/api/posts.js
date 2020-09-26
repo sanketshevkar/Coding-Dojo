@@ -26,9 +26,10 @@ router.post('/', [auth,[
         user: req.user.id
     });
 
-    const post= await newPost.save();
+     await newPost.save();
 
-    res.json(post);
+    const posts=await Post.find().sort({date: -1});
+    res.json(posts);
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');
@@ -66,8 +67,8 @@ router.delete('/:id', auth, async(req, res)=>{
             return res.status(401).json({msg:'User not autorized'});
         }
         await post.remove();
-
-        res.json({msg: 'post removed'});
+        const posts=await Post.find().sort({date: -1});
+        res.json(posts);
     } catch (err) {
         console.error(err.message);
         if(!err.kind=='ObjectId'){

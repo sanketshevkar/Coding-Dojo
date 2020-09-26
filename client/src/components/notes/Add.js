@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -8,7 +8,9 @@ import MuiDialogActions from '@material-ui/core/DialogActions';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import Typography from '@material-ui/core/Typography';
-import Text from './TextArea'
+import { Form, TextArea } from 'semantic-ui-react'
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
 
 const styles = (theme) => ({
   root: {
@@ -50,12 +52,30 @@ const DialogActions = withStyles((theme) => ({
   },
 }))(MuiDialogActions);
 
-export default function Add() {
+function Add({auth, addPost}) {
+
+   const state={
+    text:""
+   }
+
+   const [post, setPost] = useState(state)
+
+
+   const onSubmit = (e) => {
+       e.preventDefault();
+       addPost(post,auth.user)
+       handleClose()
+       setPost({  text:"" });
+   }
+
+
+
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
   };
+
   const handleClose = () => {
     setOpen(false);
   };
@@ -70,16 +90,27 @@ export default function Add() {
           New Post
         </DialogTitle>
         <DialogContent dividers>
-          <Typography gutterBottom>
-            <Text />
-          </Typography>
+        <Form>
+    <TextArea style={{ minHeight: 100, width: 500}}  value={post.text} onChange={e => setPost(e.target.value)}/>
+  </Form>
         </DialogContent>
         <DialogActions>
-          <Button autoFocus onClick={handleClose} color="primary">
-            Save changes
+          <Button autoFocus onClick={onSubmit} color="primary" >
+            Add Note
           </Button>
         </DialogActions>
       </Dialog>
     </div>
   );
 }
+
+Add.propTypes = {
+  auth: PropTypes.object.isRequired,
+  addPost: PropTypes.func.isRequired
+};
+const mapStateToProps = state => ({
+  auth: state.auth
+});
+export default connect(
+  mapStateToProps
+)(Add);
