@@ -11,7 +11,7 @@
 
 ## Getting Started
 
-* Clone this repo and get into the drugman folder
+* Clone this repo 
 
 ```
 cd Investocarcy
