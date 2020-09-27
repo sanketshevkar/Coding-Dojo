@@ -18,7 +18,8 @@ class Dashboard extends Component {
    componentDidMount(){
     var jwt = nJwt.create(this.props.user,"secret","HS256");
     var token = jwt.compact();
-    axios.get('http://localhost:5000/api/posts', 
+    
+    axios.get(`http://localhost:5000/api/posts/${this.props.auth.user.id}`, 
     {headers: {
       'x-auth-token': token
     }}) 
@@ -27,26 +28,36 @@ class Dashboard extends Component {
   }
 
    addPost = (post,user) =>{
-     console.log(user)
     let jwt = nJwt.create(user,"secret","HS256");
     let token = jwt.compact();
        console.log(post);
-       axios.post(`http://localhost:5000/api/posts/`,{
-           'text':post
+       axios.post(`http://localhost:5000/api/posts/${this.props.auth.user.id}`,{
+           'text':post,
        },{headers: {
         'x-auth-token': token
       }}).then(res => this.setState({posts: res.data}))
      }
 
      del = (id,user) =>{
-      console.log(user)
      let jwt = nJwt.create(user,"secret","HS256");
      let token = jwt.compact();
-        axios.delete(`http://localhost:5000/api/posts/${id}`,{headers: {
+        axios.delete(`http://localhost:5000/api/posts/${id}/${this.props.auth.user.id}`,{headers: {
         'x-auth-token': token
       }}).then(res => this.setState({posts: res.data}))
       }
 
+      editPost = (text,user,id) =>{
+        let jwt = nJwt.create(user,"secret","HS256");
+     let token = jwt.compact();
+        axios.put(`http://localhost:5000/api/posts/${id}/${this.props.auth.user.id}`,{
+          'text':text
+      },{headers: {
+        'x-auth-token': token
+      }}).then(res => this.setState({posts: res.data}))
+        
+        }
+
+    
 
 
   onLogoutClick = e => {
@@ -63,7 +74,7 @@ return (<div>
   
   {this.state.posts.map((res) => (
     <div style={{marginBottom: "2rem"}} key={res._id}>
-  <Note post={res} del={this.del}/>
+  <Note post={res} del={this.del} edit={this.editPost}/>
   </div>
   ))}
   

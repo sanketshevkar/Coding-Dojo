@@ -10,7 +10,7 @@ class Landing extends Component {
               <b>Create Read Update Delete</b> Your Daily Post-IT Notes
             </h4>
             <p className="flow-text grey-text text-darken-1">
-              Prioritise your notes according to your needs using drag and drop
+              Note taking helps in organising and emphasizing information
             </p>
             <br />
             <div className="col s6">

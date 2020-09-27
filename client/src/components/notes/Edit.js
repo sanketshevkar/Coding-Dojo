@@ -1,4 +1,5 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
+import PropTypes from "prop-types";
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -8,7 +9,8 @@ import MuiDialogActions from '@material-ui/core/DialogActions';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import Typography from '@material-ui/core/Typography';
-import Text from './TextArea'
+import { Form, TextArea } from 'semantic-ui-react'
+import { connect } from "react-redux";
 
 const styles = (theme) => ({
   root: {
@@ -50,7 +52,19 @@ const DialogActions = withStyles((theme) => ({
   },
 }))(MuiDialogActions);
 
-export default function Edit() {
+function Edit(props) {
+
+
+   const [post, setPost] = useState(props.text.text)
+
+
+   const onSubmit = (e) => {
+       e.preventDefault();
+       props.edit(post,props.auth.user,props.text._id)
+       handleClose()
+       setPost({  text:"" });
+   }
+
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
@@ -70,12 +84,14 @@ export default function Edit() {
           Edit Post
         </DialogTitle>
         <DialogContent dividers>
-          <Typography gutterBottom>
-            <Text />
-          </Typography>
+        <DialogContent dividers>
+        <Form>
+    <TextArea style={{ minHeight: 100, width: 500}}  value={post} onChange={e => setPost(e.target.value)}/>
+  </Form>
+        </DialogContent>
         </DialogContent>
         <DialogActions>
-          <Button autoFocus onClick={handleClose} color="primary">
+          <Button autoFocus onClick={onSubmit} color="primary">
             Save changes
           </Button>
         </DialogActions>
@@ -83,3 +99,16 @@ export default function Edit() {
       </Fragment>
   );
 }
+
+Edit.propTypes = {
+  text: PropTypes.object.isRequired,
+  edit: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired,
+};
+
+const mapStateToProps = state => ({
+  auth: state.auth
+});
+export default connect(
+  mapStateToProps
+)(Edit);

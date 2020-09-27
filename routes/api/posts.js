@@ -9,7 +9,7 @@ const User=require('../../models/User');
 //@route    POST api/posts
 //@desc     create a post
 //@access   Private
-router.post('/', [auth,[
+router.post('/:id', [auth,[
     check('text', 'Text is required').not().isEmpty()
 ]], async(req, res)=>{
     const errors=validationResult(req);
@@ -26,9 +26,10 @@ router.post('/', [auth,[
         user: req.user.id
     });
 
-     await newPost.save();
+    const post= await newPost.save();
 
-    const posts=await Post.find().sort({date: -1});
+    const posts=await Post.find({ user: req.params.id } ).sort({date: -1});
+
     res.json(posts);
     } catch (err) {
         console.error(err.message);
@@ -40,9 +41,10 @@ router.post('/', [auth,[
 //@route    GET api/posts
 //@desc     get all post
 //@access   Private
-router.get('/', auth, async(req, res)=>{
+router.get('/:id', auth, async(req, res)=>{
     try {
-        const posts=await Post.find().sort({date: -1});
+        const posts=await Post.find({ user: req.params.id } ).sort({date: -1});
+
         res.json(posts);
     } catch (err) {
         console.error(err.message);
@@ -53,10 +55,10 @@ router.get('/', auth, async(req, res)=>{
 //@route    DELETE api/posts/:id
 //@desc     delete post
 //@access   Private
-router.delete('/:id', auth, async(req, res)=>{
+router.delete('/:msgid/:userid', auth, async(req, res)=>{
     try {
-        const post=await Post.findById(req.params.id);
-
+        const post=await Post.findById(req.params.msgid);
+        
         if(!post){
             return res.status(404).json({msg: 'post not found'});
         }
@@ -67,8 +69,10 @@ router.delete('/:id', auth, async(req, res)=>{
             return res.status(401).json({msg:'User not autorized'});
         }
         await post.remove();
-        const posts=await Post.find().sort({date: -1});
+        const posts=await Post.find({ user: req.params.userid } ).sort({date: -1});
+
         res.json(posts);
+
     } catch (err) {
         console.error(err.message);
         if(!err.kind=='ObjectId'){
@@ -82,11 +86,11 @@ router.delete('/:id', auth, async(req, res)=>{
 //@route    PUT api/posts
 //@desc     update a post
 //@access   Private
-router.put('/:id', [auth,[
+router.put('/:msgid/:userid', [auth,[
     check('text', 'Text is required').not().isEmpty()
 ]], async(req, res)=>{;
     try{
-    let post=await Post.findById(req.params.id);
+    let post=await Post.findById(req.params.msgid);
 
         if(!post){
             return res.status(404).json({msg: 'post not found'});
@@ -104,7 +108,9 @@ router.put('/:id', [auth,[
 
      await post.save()
 
-    res.json(post);
+     const posts=await Post.find({ user: req.params.userid } ).sort({date: -1});
+
+     res.json(posts);
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');

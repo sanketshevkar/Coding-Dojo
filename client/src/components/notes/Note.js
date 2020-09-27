@@ -51,7 +51,7 @@ function Note(props) {
         <Toolbar>
           <Grid container spacing={2} alignItems="center">
             <Grid item>
-              <Edit text={props.post.text}/>
+              <Edit text={props.post} edit={props.edit}/>
               <Button variant="contained" color="secondary" className={classes.addUser} onClick={()=>del(props.post._id,props.auth.user)}>
                 Delete
               </Button>
@@ -81,7 +81,8 @@ Note.propTypes = {
   classes: PropTypes.object.isRequired,
   post: PropTypes.object.isRequired,
   auth: PropTypes.object.isRequired,
-  del: PropTypes.func.isRequired
+  del: PropTypes.func.isRequired,
+  edit: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
