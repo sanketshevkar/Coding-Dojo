@@ -1,9 +1,10 @@
 # POST IT
 
-Create Posts
-Read Posts
-Update Posts
-Delete Posts
+* Create Posts
+* Read Posts
+* Update Posts
+* Delete Posts
+* Recieve emails upon registration and login
 
 ## Demo
 [http://13.235.238.150/](http://13.235.238.150/)
