@@ -2,3 +2,5 @@
 config/keys.js
 sendgrid.env
 sendgrid.env
+/node_modules
+package-lock.json

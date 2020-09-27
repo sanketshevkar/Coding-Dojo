@@ -5,6 +5,9 @@ const app = express();
 const passport = require("passport");
 const users = require("./routes/api/users");
 const posts = require("./routes/api/posts");
+
+const path = require("path");
+app.use(express.static(path.join(__dirname, "client/build")))
 // Bodyparser middleware
 app.use(
   bodyParser.urlencoded({
