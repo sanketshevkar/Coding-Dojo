@@ -47,9 +47,9 @@ router.post("/register", (req, res) => {
             const msg = {
                 to: newUser.email,
                 from: 'shevkar.sanket@gmail.com',
-                subject: 'Sending with Twilio SendGrid is Fun',
-                text: 'and easy to do anywhere, even with Node.js',
-                html: '<strong>and easy to do anywhere, even with Node.js</strong>',
+                subject: 'Thank You',
+                text: 'Thank You For Registering',
+                html: '<strong>Thank You For Registering</strong>',
             };
 
             sgMail.send(msg);
@@ -95,10 +95,22 @@ router.post("/login", (req, res) => {
                     (err, token) => {
                         res.json({
                             success: true,
-                            token:  token
+                            token: token
                         });
+                        sgMail.setApiKey(keys.sendGridKey);
+                        const msg = {
+                            to: email,
+                            from: 'shevkar.sanket@gmail.com',
+                            subject: 'You Have Logged In',
+                            text: 'Thank You For Logging In',
+                            html: '<strong>Thank You For Logging In</strong>',
+                        };
+
+                        sgMail.send(msg);
                     }
                 );
+
+
             } else {
                 return res
                     .status(400)
