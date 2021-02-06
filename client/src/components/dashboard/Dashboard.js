@@ -19,7 +19,7 @@ class Dashboard extends Component {
     var jwt = nJwt.create(this.props.user,"secret","HS256");
     var token = jwt.compact();
     
-    axios.get(`http://localhost:5000/api/posts/${this.props.auth.user.id}`, 
+    axios.get(`https://dry-dawn-92617.herokuapp.com/api/posts/${this.props.auth.user.id}`, 
     {headers: {
       'x-auth-token': token
     }}) 
@@ -31,7 +31,7 @@ class Dashboard extends Component {
     let jwt = nJwt.create(user,"secret","HS256");
     let token = jwt.compact();
        console.log(post);
-       axios.post(`http://localhost:5000/api/posts/${this.props.auth.user.id}`,{
+       axios.post(`https://dry-dawn-92617.herokuapp.com/api/posts/${this.props.auth.user.id}`,{
            'text':post,
        },{headers: {
         'x-auth-token': token
@@ -49,7 +49,7 @@ class Dashboard extends Component {
       editPost = (text,user,id) =>{
         let jwt = nJwt.create(user,"secret","HS256");
      let token = jwt.compact();
-        axios.put(`http://localhost:5000/api/posts/${id}/${this.props.auth.user.id}`,{
+        axios.put(`https://dry-dawn-92617.herokuapp.com/api/posts/${id}/${this.props.auth.user.id}`,{
           'text':text
       },{headers: {
         'x-auth-token': token
